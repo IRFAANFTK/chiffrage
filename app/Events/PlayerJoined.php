@@ -19,7 +19,7 @@ class PlayerJoined implements ShouldBroadcast
     public function __construct(Player $player)
     {
         $this->player = $player;
-        $this->sessionCode = $player->session->code;
+        $this->sessionCode = $player->gameSession->code;
     }
 
     public function broadcastOn()

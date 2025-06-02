@@ -8,7 +8,7 @@ class Player extends Model
 {
     protected $fillable = ['game_session_id', 'name', 'card'];
 
-    public function session()
+    public function gameSession()
     {
         return $this->belongsTo(GameSession::class);
     }
