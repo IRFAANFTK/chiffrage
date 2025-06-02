@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('game_session_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->integer('card')->nullable();
             $table->timestamps();
         });
     }

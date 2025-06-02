@@ -2,62 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\CardsRevealed;
-use App\Events\PlayerJoined;
-use App\Models\Card;
-use App\Models\Player;
 use App\Models\GameSession;
+use App\Models\Player;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Events\PlayerJoined;
+use App\Events\CardChosen;
+use App\Events\RoundReset;
 
 class GameSessionController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        $code = Str::upper(Str::random(6));
-        $session = GameSession::create(['code' => $code]);
-        return response()->json(['code' => $session->code]);
+        $session = GameSession::create([
+            'code' => strtoupper(uniqid())
+        ]);
+
+        $player = Player::create([
+            'game_session_id' => $session->id,
+            'name' => $request->name
+        ]);
+
+        broadcast(new PlayerJoined($player))->toOthers();
+
+        return response()->json([
+            'session' => $session,
+            'player' => $player
+        ]);
     }
 
-    public function join(Request $request, $code)
+    public function join($code, Request $request)
     {
         $session = GameSession::where('code', $code)->firstOrFail();
+
         $player = Player::create([
-            'session_id' => $session->id,
-            'name' => $request->name,
+            'game_session_id' => $session->id,
+            'name' => $request->name
         ]);
-        broadcast(new PlayerJoined($session))->toOthers();
+
+        broadcast(new PlayerJoined($player))->toOthers();
+
         return response()->json(['player' => $player]);
     }
 
-    public function chooseCard(Request $request, $code)
-    {
-        $session = GameSession::where('code', $code)->firstOrFail();
-        $player = Player::where('session_id', $session->id)
-            ->where('name', $request->user())
-            ->first();
-
-        // For simplicity (no auth): identify by name if needed
-        if (!$player) {
-            $player = $session->players()->where('name', $request->name)->firstOrFail();
-        }
-
-        Card::updateOrCreate(
-            ['session_id' => $session->id, 'player_id' => $player->id],
-            ['card_number' => $request->card_number]
-        );
-
-        // Check if all players have chosen
-        if ($session->cards()->count() === $session->players()->count()) {
-            broadcast(new CardsRevealed($session))->toOthers();
-        }
-
-        return response()->json(['message' => 'Card chosen!']);
-    }
-
-    public function show($code)
+    public function getSession($code)
     {
         $session = GameSession::where('code', $code)->with('players')->firstOrFail();
         return response()->json($session);
+    }
+
+    public function chooseCard($code, Request $request)
+    {
+        $player = Player::findOrFail($request->player_id);
+        $player->card = $request->card;
+        $player->save();
+
+        broadcast(new CardChosen($player))->toOthers();
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    public function resetRound($code)
+    {
+        $session = GameSession::where('code', $code)->firstOrFail();
+        $session->players()->update(['card' => null]);
+
+        broadcast(new RoundReset($code))->toOthers();
+
+        return response()->json(['status' => 'ok']);
     }
 }

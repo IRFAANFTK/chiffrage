@@ -11,5 +11,6 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::post('/sessions', [GameSessionController::class, 'create']);
 Route::post('/sessions/{code}/join', [GameSessionController::class, 'join']);
+Route::get('/sessions/{code}', [GameSessionController::class, 'getSession']);
 Route::post('/sessions/{code}/choose', [GameSessionController::class, 'chooseCard']);
-Route::get('/sessions/{code}', [GameSessionController::class, 'show']);
+Route::post('/sessions/{code}/reset', [GameSessionController::class, 'resetRound']);

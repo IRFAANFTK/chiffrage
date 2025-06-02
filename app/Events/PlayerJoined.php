@@ -2,28 +2,33 @@
 
 namespace App\Events;
 
-use App\Models\GameSession;
+use App\Models\Player;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class PlayerJoined implements ShouldBroadcast
 {
     use InteractsWithSockets, SerializesModels;
 
-    public $players;
+    public $player;
     public $sessionCode;
 
-    public function __construct(GameSession $session)
+    public function __construct(Player $player)
     {
-        $this->players = $session->players()->get(['id', 'name']);
-        $this->sessionCode = $session->code;
+        $this->player = $player;
+        $this->sessionCode = $player->session->code;
     }
 
-    public function broadcastOn(): Channel
+    public function broadcastOn()
     {
-        return new Channel("session.{$this->sessionCode}");
+        return new PrivateChannel("session.{$this->sessionCode}");
+    }
+
+    public function broadcastAs()
+    {
+        return 'player.joined';
     }
 }

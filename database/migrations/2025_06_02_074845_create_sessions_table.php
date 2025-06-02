@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('game_sessions', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // e.g., to join via link
+            $table->string('code')->unique();
             $table->timestamps();
         });
     }
