@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
+use function Symfony\Component\String\b;
 
 class AppServiceProvider extends ServiceProvider
 {

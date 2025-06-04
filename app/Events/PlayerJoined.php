@@ -24,7 +24,7 @@ class PlayerJoined implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PrivateChannel("session.{$this->sessionCode}");
+        return new \Illuminate\Broadcasting\Channel("session.{$this->sessionCode}");
     }
 
     public function broadcastAs()
