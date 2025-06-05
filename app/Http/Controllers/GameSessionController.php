@@ -56,7 +56,11 @@ class GameSessionController extends Controller
         $player->card = $request->card;
         $player->save();
 
-        broadcast(new CardChosen($player))->toOthers();
+        $sessionCode = $player->gameSession->code;
+        $playerId = $player->id;
+        $cardValue = $player->card;
+
+        broadcast(new CardChosen($sessionCode, $playerId, $cardValue));
 
         return response()->json(['status' => 'ok']);
     }
