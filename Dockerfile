@@ -15,17 +15,21 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install Node.js (latest LTS via NodeSource)
+# Install Node.js (latest LTS)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application
+# Copy app code
 COPY . .
 
-
-# Set permissions (optional, but common for Laravel)
+# Set permissions (optional)
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
+
+# Install Composer & NPM dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader && \
+    npm install && \
+    npm run build
