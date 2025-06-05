@@ -31,5 +31,4 @@ RUN chown -R www-data:www-data /var/www \
 
 # Install Composer & NPM dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader && \
-    npm install && \
-    npm run build
+    npm install 
