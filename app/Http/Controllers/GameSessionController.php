@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RevealCards;
 use App\Models\GameSession;
 use App\Models\Player;
 use Illuminate\Http\Request;
@@ -74,4 +75,14 @@ class GameSessionController extends Controller
 
         return response()->json(['status' => 'ok']);
     }
+
+    public function revealCards($code)
+    {
+        $session = GameSession::where('code', $code)->firstOrFail();
+
+        broadcast(new RevealCards($session->code));
+
+        return response()->json(['status' => 'cards revealed']);
+    }
+
 }

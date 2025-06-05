@@ -15,4 +15,6 @@ Route::get('/sessions/{code}', [GameSessionController::class, 'getSession']);
 Route::post('/sessions/{code}/choose', [GameSessionController::class, 'chooseCard']);
 Route::post('/sessions/{code}/reset', [GameSessionController::class, 'resetRound']);
 Route::post('/sessions/{session}/players/{player}/reset', [GameSessionController::class, 'resetRound']);
+Route::post('/sessions/{code}/reveal-cards', [GameSessionController::class, 'revealCards']);
+
 
