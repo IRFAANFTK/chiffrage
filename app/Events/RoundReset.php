@@ -26,7 +26,7 @@ class RoundReset implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'session.reset'; // ✅ match your frontend `.session.reset` listener
+        return 'session.reset';
     }
 
     public function broadcastWith(): array

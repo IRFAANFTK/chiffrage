@@ -71,7 +71,7 @@ class GameSessionController extends Controller
         $session = GameSession::where('code', $code)->firstOrFail();
         $session->players()->update(['card' => null]);
 
-        broadcast(new RoundReset($session->code)); // 🔥 sync all players
+        broadcast(new RoundReset($session->code)); //
 
         return response()->json(['status' => 'ok']);
     }
