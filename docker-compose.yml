@@ -11,6 +11,12 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        command: >
+            sh -c "
+              php artisan config:clear &&
+              php artisan migrate --force &&
+              php artisan serve --host=0.0.0.0 --port=8000
+            "
 
     webserver:
         image: nginx:alpine
